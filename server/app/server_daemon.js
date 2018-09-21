@@ -52,7 +52,7 @@ store.on( "error", function( error ) {
 app.use( session({
 	secret: process.env.APP_SECRET,
 	cookie: {
-		maxAge: ( 1000 * 60 * 60 * 1 ) // 1 hour 
+		maxAge: ( 1000 * 60 * 60 * 24 * 120 ) // 120 days 
 	},
 	store: store,
 	resave: true,
