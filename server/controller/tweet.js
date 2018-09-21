@@ -332,7 +332,7 @@ const parseTweet = function( tweet, do_new_user_tweet, do_new_receipt_tweet ) {
 		tweet.data.created_at = new Date( tweet.data.created_at );
 
 		// see if we already have this twitter user
-		return TwitterUser.findOne( { "data.id_str": tweet.data.user.id_str } )
+		TwitterUser.findOne( { "data.id_str": tweet.data.user.id_str } )
 			.then( ( twitter_user ) => {
 
 				// create it if not
@@ -651,6 +651,26 @@ const sendDM = function( twitter_user, dm ) {
 	});
 };
 
+/*
+	(string) screen_name
+	(object) {
+
+		(int) store_number
+
+		(bool) is_new_in_store
+		(bool) is_new_drive_thru
+		(bool) is_new_store
+
+		(int) in_store_receipt_number
+		(int) drive_thru_receipt_number
+
+		(int) stores_remaining
+		(int) in_store_receipts_remaining
+	}
+
+	returns (string)
+			or (bool) false
+*/
 const createNewReceiptTweetText = function( screen_name, data ) {
 
 	let in_store_phrases = [
@@ -693,14 +713,15 @@ const createNewReceiptTweetText = function( screen_name, data ) {
 		return "@"+ screen_name +" "+ intro +"! You just got "+ data.drive_thru_receipt_number +" and store "+ data.store_number +". Now you only have "+ data.stores_remaining +" stores to go!";
 	else if ( data.is_new_in_store && data.is_new_store )
 		return "@"+ screen_name +" "+ intro +"! You just got "+ data.in_store_receipt_number +" and store "+ data.store_number +". Now you only have "+ data.in_store_receipts_remaining +" receipts and "+ data.stores_remaining +" stores to go!";
-	else if ( data.is_new_drive_thru )
-		return "@"+ screen_name +" "+ intro +"! You just got "+ data.drive_thru_receipt_number +".";
+	// no drive thru tweets
+	//else if ( data.is_new_drive_thru )
+	//	return "@"+ screen_name +" "+ intro +"! You just got "+ data.drive_thru_receipt_number +".";
 	else if ( data.is_new_in_store )
 		return "@"+ screen_name +" "+ intro +"! You just got "+ data.in_store_receipt_number +". Now you only have "+ data.in_store_receipts_remaining +" to go!";
 	else if ( data.is_new_store )
 		return "@"+ screen_name +" "+ intro +"! You just got store "+ data.store_number +". Now you only have "+ data.stores_remaining +" to go!";
 
-	return;
+	return false;
 };
 
 const createNewReceiptDMText = function( screen_name, data ) {
